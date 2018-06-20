@@ -9,7 +9,7 @@
 class RegAction extends CommonAction
 {
 
-    //todo 注册表单       Lee_zhj
+    //todo 注册表单 reg      Lee_zhj
     public function register()
     {
 
