@@ -22,7 +22,7 @@ class TixianAction extends CommonAction {
         $yue = I('post.yue');
 
 
-        //todo 查询银行卡种
+        //todo 查询银行卡种。。
         $tb_bank=M(tb_bank);
         $bank['openID']=$userOpenID;
         $sqlbank=$tb_bank->where($bank)->field('bank_class')->select();
