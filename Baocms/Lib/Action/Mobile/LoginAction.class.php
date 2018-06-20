@@ -23,7 +23,7 @@ public function login(){
 	//根据条件查询并实例化user对象
 	$user=M('User')->where($arr)->find();
 	
-	//判断是否存在user对象
+	//判断是否存在user对象.
 	if($user){
 		$uid = $user[id];
 		$uname = "";
