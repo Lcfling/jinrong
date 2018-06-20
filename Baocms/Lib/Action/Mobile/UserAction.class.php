@@ -11,7 +11,7 @@ class UserAction extends CommonAction {
     //todo 个人中心首页信息 ZF
     public function index(){
 
-        $user_id=$_POST['id'];//获取用户id111
+        $user_id=$_POST['id'];//获取用户id1112222
 
         //通过id查找自己的个人信息
         $tb_user=M('tb_user');
