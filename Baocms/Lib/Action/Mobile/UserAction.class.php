@@ -11,7 +11,7 @@ class UserAction extends CommonAction {
     //todo 个人中心首页信息 ZF
     public function index(){
 
-        $user_id=$_POST['id'];//获取用户id
+        $user_id=$_POST['id'];//获取用户id111
 
         //通过id查找自己的个人信息
         $tb_user=M('tb_user');
@@ -28,7 +28,7 @@ class UserAction extends CommonAction {
 
         $user_id=$_POST['id']; // 获取用户id
 
-        // 通过id查找自己的收益来源.....
+        // 通过id查找自己的收益来源!
         $sql2="select a.*,b.* from tb_fanyong as a JOIN tb_user as b on a.openID=b.ID where a.p1id=$user_id or a.p2id=$user_id or a.p3id=$user_id;";
         $listmoney= mysql_fetch_array( mysql_query($sql2));
 
