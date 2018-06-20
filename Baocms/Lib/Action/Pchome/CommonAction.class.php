@@ -152,6 +152,7 @@ class CommonAction extends Action
     }
     private function getTemplateTheme()
     {
+        //lcf
         define('THEME_NAME', 'default');
         if ($this->theme) {
             $theme = $this->theme;
