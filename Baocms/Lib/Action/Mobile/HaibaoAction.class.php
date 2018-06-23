@@ -10,40 +10,35 @@ class HaibaoAction extends CommonAction {
 
   public function index(){
       session_start();
-   //   require "connectdb.php";
-      $ID=$_POST['ID'];
-      $openid=$_POST['openID'];
-      $userNickname=$_POST['nickname'];
+
+     // $ID=$_POST['ID'];
+    //  $openid=$_POST['openID'];
+     // $userNickname=$_POST['nickname'];
+      $ID=222;
+      $userNickname="张贱贱";
 //      $ID=$_SESSION['ID'];
 //      $openid=$_SESSION['openid'];
 //      $userNickname=$_SESSION['nickname'];
 //
-      if (strlen($userNickname)>18) $userNickname=substr($userNickname,0,18) . '...';
-      if(empty($ID)){
-          exit;
-      }
 
-      if($this->is_weixin()){
-          echo "<script>var jswx=\"yes\";</script>";//value js
-      }else {
-          echo "<script>var jswx=\"no\";</script>";//value js
-      }
 
-      $sql="select openid from haibao where openid='$openid'";
-      $go=mysql_query($sql) or die("ERROR1");
-      $sql_num=mysql_num_rows($go);
+//      require_once 'phpqrcode/phpqrcode.php';
 
-      $ACC_TOKEN=$this->acctoken();
+//      require_once
+         // echo  APP_PATH.'Lib\phpqrcode\phpqrcode.php';
 
-      require_once 'phpqrcode/phpqrcode.php';
-      $value= $url = "http://jinfu.yiaigo.com/addshangji_index.php?ushar=".$ID;
+
+      require_once  './Baocms/Lib/phpqrcode/phpqrcode.php';
+
+
+     // $value= $url = "http://jinfu.yiaigo.com/addshangji_index.php?ushar=".$ID;
+      $value= $url = "http://www.baidu.com";
       $errorCorrectionLevel = 'L';    //容错级别
       $matrixPointSize = 5;           //生成图片大小
 
       //生成二维码图片
-      $filename ='images/haibao/'.$ID.'.png';
+      $filename ='./'.$ID.'.png';
       QRcode::png($value,$filename , $errorCorrectionLevel, $matrixPointSize, 2);
-
 
 
       $config = array(
@@ -70,41 +65,15 @@ class HaibaoAction extends CommonAction {
                   'height'=>120,
                   'opacity'=>100
               ),
-              /* array(
-                   'url'=>'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1525951192723&di=638102da56e5dad9056a26d4e10a6f7c&imgtype=0&src=http%3A%2F%2Fpic.58pic.com%2F58pic%2F13%2F74%2F66%2F70E58PICHRi_1024.jpg',//touxiang
-                   'left'=>120,
-                   'top'=>70,
-                   'right'=>0,
-                   'stream'=>0,
-                   'bottom'=>0,
-                   'width'=>55,
-                   'height'=>55,
-                   'opacity'=>100
-               ),
-       */    ),
+           ),
           'background'=>'bg.jpg',
       );
 
-      $filename="C:\phpstudy\WWW\jinfu\images\haibao\\".$ID.".jpg";
+      $filename=__DIR__."/images/haibao/".$ID.".jpg";
       $this->createPoster($config,$filename);
 
   }
 
-
-
-   public function is_weixin() {
-        if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false) {
-            return true;
-        }
-        return false;
-    }
-
-    public function acctoken(){
-        $myfile = fopen("accessToken/newfile.txt", "r") or die("Unable to open file!");
-        $ACC_TOKEN=fread($myfile,filesize("accessToken/newfile.txt"));
-        fclose($myfile);
-        return $ACC_TOKEN;
-    }
 
     public function createPoster($config=array(),$filename=""){
         //如果要看报什么错，可以先注释掉这个header
@@ -132,7 +101,10 @@ class HaibaoAction extends CommonAction {
 
         //背景方法
         $backgroundInfo = getimagesize($background);
+
         $backgroundFun = 'imagecreatefrom'.image_type_to_extension($backgroundInfo[2], false);
+
+
         $background = $backgroundFun($background);
 
         $backgroundWidth = imagesx($background);    //背景宽度
@@ -183,8 +155,6 @@ class HaibaoAction extends CommonAction {
                 imagettftext($imageRes,$val['fontSize'],$val['angle'],$val['left'],$val['top'],$fontColor,$val['fontPath'],$val['text']);
             }
         }
-
-
 
         //生成图片
         if(!empty($filename)){
