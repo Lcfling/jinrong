@@ -1,59 +1,68 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: hyk
+ * User: Administrator
  * Date: 2018/6/20
- * Time: 9:11
+ * Time: 18:18
  */
 
-class LoginController extends Controller {
-	
-//todo 登录校验   hyk
-public function login(){
-	if(!$this->isPost()){
-        echo('页面不存在');
-		exit;
+class LoginAction extends CommonAction
+{
+
+    //todo 用户登录       Lee_zhj
+    public function login()
+    {
+
+        $this->display();
     }
-	//接收用户名,密码,自动登录
-	$uname = $_POST["uname"];
-    $pwd = $_POST["pwd"];
-    $auto = $_POST["yes_no"];
-	$arr = array('uname' => $uname,'pwd'=> $pwd);
-	
-	//根据条件查询并实例化user对象
-	$user=M('User')->where($arr)->find();
-	
-	//判断是否存在user对象.
-	if($user){
-		$uid = $user[id];
-		$uname = "";
-        if($user[nickname]){
-            $uname=$user[nickname];
+
+    //todo 登录处理 dologin      Lee_zhj
+    public function do_login()
+    {
+
+        $username = I('username');
+        $password = I('password');
+        $model = new $model('User');
+        $user = $model->where(array('username' => $username))->find();
+        if (empty($user)||$user['password'] != md5($password)) {
+            $this->error('账户或密码错误！');
         }
 
-		//存入session
-		session('uid',$user[id]);
-        session('uname',$uname);
-		//判断用户是否勾选为下次自动登录
-		if($auto=='on'){
-            cookie('uid',$uid,7*24*3600);
-            cookie('uname',$uname,7*24*3600);
+        //写入session
+        session('user.userId',$user['user_Id']);
+        session('user.username',$user['username']);
+
+        //跳转首页
+        $this->redirect('Index/index');
+
+    }
+
+    //todo 退出登录       Lee_zhj
+    public function loginout()
+    {
+        if (!session('user.userId')) {
+            $this->error('请登录！');
         }
-		//登录成功跳转到首页
-        redirect("index.php");
-	} else {
-		redirect(U('login'),2,'用户名或密码错误,跳转回登陆页面,重新登录...');
-	}
-	
+
+        session_destroy();
+        $this->success('退出登录成功！',U('Index.index'));
+    }
+
 }
 
-//用户点击退出
-public function logout(){
-    session('uid',null);
-    session('uname',null);
-    cookie('uid',null);
-    cookie('uname',null);
-    redirect("index.php");
-}
 
-?>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
