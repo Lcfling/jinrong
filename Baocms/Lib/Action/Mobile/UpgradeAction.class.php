@@ -6,9 +6,9 @@
  * Time: 14:07
  */
 
-
 class UpgradeAction extends CommonAction
 {
+
 
     //todo 升级会员       Lee_zhj
     public function upgrade()
@@ -16,16 +16,20 @@ class UpgradeAction extends CommonAction
         date_default_timezone_set('PRC');
         $time = date("Y-m-d H:i:s");
         //$userOpenID=$_POST['openid'];
+        $userOpenID='oFaDv1cc3HPvj3m4QH4UMyEBxeS4';
 
         //todo 查询user表的ID，openID       Lee_zhj
         $tb_user = M(user);
         //$user['openid']=$userOpenID;
-        $user['openID'] = 'oFaDv1cc3HPvj3m4QH4UMyEBxeS4';
-        $user['ID'] = 1146;
+        $user['openID'] = $userOpenID;
+        //$user['ID'] = 1146;
 
 
-        $sqluserID = $tb_user->where($user)->getField('ID');
+        $ID = $tb_user->where($user)->getField('ID');
+        var_dump($ID);
+        $ID=1146;
         $sqluseropenID = $tb_user->where($user)->getField('openID');
+
 
        // var_dump($sqluserID);
       //  var_dump($sqluseropenID);
@@ -33,6 +37,8 @@ class UpgradeAction extends CommonAction
 
         //根据主键ID查询用户姓名
         $sqlusernickName = $tb_user->where($user)->getField('nickName');
+
+        $sqlusernickName='leeleelee';
        // var_dump($sqlusernickName);
 
 
@@ -41,12 +47,13 @@ class UpgradeAction extends CommonAction
         //取出套餐类型
         $tb_order = M(order);
         //$orderid=$_POST['orderid'];
+        $orderid=9999;
         //$realpay=$_POST['realpay'];
         $order['ID'] = '905';
         //$realpay=0.01;
 
         //$taocan = isset($_GET["taocan"])?$_GET["taocan"]:'';
-        $taocan=598;
+        $taocan=198;
         $sqlorder = $tb_order->where($order)->Field('ID, payMoney, title')->select();
 
         //var_dump($sqlorder);
@@ -55,7 +62,6 @@ class UpgradeAction extends CommonAction
 
 
         //---????????入库之前判断????????????????????????????--------------------------------------
-        //var_dump('---入库之前判断---');
         /*$payin = mysql_query($sqlorder) or die(mysql_error());
 
         while($row = mysql_fetch_array($payin))
@@ -83,22 +89,23 @@ class UpgradeAction extends CommonAction
         $parent = $tb_user->where($user)->getField('p1id');
         $userlv = $tb_user->where($user)->getField('user_lv');
 
-        $temppay=0;
+        $temppay = $tb_user->where($user)->getField('if_pay');
+
+        //$temppay=1;
 
         echo "<br>";
-        var_dump($temppay);
+       //var_dump($parent);
         echo "<br>";
-        var_dump($parent);
+      //  var_dump($userlv);
         echo "<br>";
-        var_dump($userlv);
+       // var_dump($temppay);
 
 
-
-        if($temppay ){
-            echo "1";
-            exit();
-        }
-        echo "2";
+//        if($temppay ){
+//            echo "1";
+//            exit();
+//        }
+        //echo "2";
         //die();
 
         //如果用户购买的是598套餐，更改数据库的状态
@@ -112,7 +119,25 @@ class UpgradeAction extends CommonAction
 
         $parents=array();
 
-       $this-> getparents($parent,3,$parents);
+       $this->getparents($parent,3,$parents);
+//        //$tb_user = M(user);
+//        $userq['ID'] = 1146;
+//
+//        $str_sql1=$tb_user->where($userq)->field('ID,p1id,user_lv,vip_rank,openID')->select();
+//        //print_r($str_sql1);
+//        //die();
+//
+//        // $str_sql1="SELECT ID,p1id,user_lv,vip_rank,openID FROM tb_user where ID=$ID";
+//
+//            $parents['ID']=$str_sql1[0]['ID'];
+//            $parents['p1id']=$str_sql1[0]['p1id'];
+//            $parents['userlv']=$str_sql1[0]['user_lv'];
+//            $parents['viprank']=$str_sql1[0]['vip_rank'];
+//            $parents['deep']=1;
+//
+//        var_dump($parents);
+//        die();
+
 
             if($taocan=="598") {
                 $readyback = 0;
@@ -202,6 +227,7 @@ class UpgradeAction extends CommonAction
             }
 
 
+
             //var_dump($parents);
 
 
@@ -214,66 +240,139 @@ class UpgradeAction extends CommonAction
             //die();
             if($glomoney>0){
 
+                $ulimit['ulimit'] = 'ulimit+$glomoney';
+                $tb_user->where('id==\'".$v[\'ID\']."\'')->save($ulimit); // 根据条件更新记录
 
-
+                var_dump($glomoney);
                 //$sql1 = "UPDATE tb_user SET ulimit=ulimit+$glomoney WHERE ID='".$v['ID']."'";
                 //$result1 = mysql_query($sql1) or die("ERROR3");
             }
         }
 
+        //插入返佣数据表
+        if(!isset($parents[1])){
+            $parents[1]['realback']=0;
+            $parents[1]['glf']=0;
+        }
+
+        if(!isset($parents[2])){
+            $parents[2]['realback']=0;
+            $parents[2]['glf']=0;
+        }
+
+        foreach($parents as $key=>$value){
+            if(($value['realback']+$value['glf'])>0){
+                $data['ushangji']=$value['openID'];//分享者的 openID
+
+                $data['uopenid']=$userOpenID;
+                //$data['uopenid']='oFaDv1cc3HPvj3m4QH4UMyEBxeS4';
+                $data['uprice']=$value['realback']+$value['glf'];
+                $data['utaocan']=$value['taocan'];
+                //$this->https_post("http://jinfu.yiaigo.com/notic_yongjin.php",$data);
+
+            }
+
+        }
 
 
+        //数据写入返佣表
+        $tb_fanyong = M("fanyong"); // 实例化User对象
+        $fanyong['ordeId'] = $orderid;
+        $fanyong['openID'] = $ID ;
+        $fanyong['p1id'] = $parents[0]['ID'] ;
+        $fanyong['p2id'] = $parents[1]['ID'] ;
+        $fanyong['p3id'] = $parents[2]['ID'] ;
+        $fanyong['p1fy'] = $parents[0]['realback'] ;
+        $fanyong['p2fy'] = $parents[1]['realback'] ;
+        $fanyong['p3fy'] = $parents[2]['realback'] ;
+        $fanyong['p1gl'] = $parents[0]['glf'] ;
+        $fanyong['p2gl'] = $parents[1]['glf'] ;
+        $fanyong['p3gl'] = $parents[2]['glf'] ;
+        $fanyong['userOrder'] = $taocan ;
+        $fanyong['isFlag'] = 1 ;
+        $fanyong['fyDate'] = $time ;
+        $fanyong['nickName'] = $sqlusernickName ;
 
+        //$tb_fanyong->data($fanyong)->add();
+        $list=$tb_fanyong->add($fanyong);
+
+//        if ($list){
+//            $data['msg']="success";
+//            $data['error']=1;
+//            die(json_encode($data));
+//        }else{
+//            $data['msg']="fail";
+//            $data['error']=2;
+//            die(json_encode($data));
+//        }
+
+        echo "------amaze------";
+        var_dump($fanyong);
+        //die();
+        //$result2 = mysql_query($tb_fanyong) or die("ERRORfanyong");
+        //var_dump($result2);
+
+        echo "------amazing------";
     }
 
 
-    function getparents($ID,$deep=1,&$object){
+  public function getparents($ID,$deep=1,&$object){
 
-       // $str_sql1="SELECT ID,p1id,user_lv,vip_rank,openID FROM tb_user where ID=$ID";
+      $tb_user = M(user);
+      $userq['ID'] = $ID;
 
-        //$result1 = mysql_query($str_sql1) or die("ERROR5");
+      $str_sql1=$tb_user->where($userq)->field('ID,p1id,user_lv,vip_rank,openID')->select();
+      //print_r($str_sql1);
+      //die();
 
-        //$result1 = mysql_query("SELECT p1id FROM tb_user where openID='asdfghjkl'");
+      // $str_sql1="SELECT ID,p1id,user_lv,vip_rank,openID FROM tb_user where ID=$ID";
 
-        while($row1 = mysql_fetch_array($result1))
+      $temp['ID']=$str_sql1[0]['ID'];
+      $temp['p1id']=$str_sql1[0]['p1id'];
+      $temp['userlv']=$str_sql1[0]['user_lv'];
+      $temp['viprank']=$str_sql1[0]['vip_rank'];
+      $temp['deep']=1;
 
-        {
-
-            $temp['ID']=$row1['ID'];
-
-            $temp['p1id']=$row1['p1id'];
-
-            $temp['userlv']=$row1['user_lv'];
-
-            $temp['viprank']=$row1['vip_rank'];
-
-            $temp['deep']=$deep;
-
-        }
+      var_dump($temp);
+      //die();
 
         //如果存在上级
 
         if($temp){
-
             array_push($object,$temp);
-
             $deep--;
 
-
-
             if($deep>0&&($temp['ID']!=$temp['p1id'])){
-
-                //getparents($temp['p1id'],$deep,$object);
-
+                $this->getparents($temp['p1id'],$deep,$object);
             }
 
         }else{
-
             return;
-
         }
 
     }
+
+
+
+//    public function https_post($url,$data)
+//    {
+//        $curl = curl_init();
+//        curl_setopt($curl, CURLOPT_URL, $url);
+//        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+//        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+//        curl_setopt($curl, CURLOPT_POST, 1);
+//        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+//
+//        $ref =curl_exec($curl);
+//
+//        if (curl_errno($curl)) {
+//            return 'Errno'.curl_error($curl);
+//        }
+//        curl_close($curl);
+//        return $ref;
+//
+//    }
 
 }
 
