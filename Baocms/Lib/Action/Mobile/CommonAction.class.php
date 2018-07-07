@@ -8,47 +8,12 @@ class CommonAction extends Action
 
     protected function _initialize()
     {
-        
-        define('IN_MOBILE', true);
-        searchWordFrom();
-        $this->uid = getUid();
-        if (!empty($this->uid)) {
-            $member = $MEMBER = $this->member = D('Users')->find($this->uid);
-            //客户端缓存会员数据
-            $member['password'] = '';
-            $member['token'] = '';
-            cookie('member', $member);
-        }
-        $this->_CONFIG = D('Setting')->fetchAll();
-        define('__HOST__', $this->_CONFIG['site']['host']);
-        if (!empty($city['name'])) {
-            $this->_CONFIG['site']['cityname'] = $city['name'];
-        }
-        $this->assign('MEMBER', $this->member);
-        $this->assign('today', TODAY);
-        //兼容模版的其他写法
-        $this->assign('nowtime', NOW_TIME);
-        $this->assign('ctl', strtolower(MODULE_NAME));
-        //主要方便调用
-        $this->assign('act', ACTION_NAME);
+        header("Access-Control-Allow-Origin: *"); // 允许任意域名发起的跨域请求
+        header('Access-Control-Allow-Methods:GET, POST');
+        header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept');
+
     }
 
-
-
-
-
-
-
-	
-
-
-
-
-
-	
-	
-
-	
 
 	//lcf $error success faild
 	public function jsonout($error="faild",$msg="",$data){
@@ -58,5 +23,26 @@ class CommonAction extends Action
         $result['data']=$data;
         die(json_encode($result));
     }
+
+    public function login_verify($ID,$randpwd){
+
+	    $tb_user=M('user');
+	    $user['ID']=$ID;
+	    $user['randpwd']=$randpwd;
+	    $list=$tb_user->where($user)->select();
+	    if ($list){
+	        $data['error']="登陆状态";
+	        $data['msg']=1;
+	        return $data;
+        }else{
+            $data['error']="未登陆状态";
+            $data['msg']=2;
+            return $data;
+        }
+    }
+
+
+
+
 	
 }
