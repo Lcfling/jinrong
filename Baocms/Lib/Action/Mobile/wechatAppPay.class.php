@@ -6,7 +6,7 @@
  * Time: 12:01
  */
 
-//todo 微信APP支付统一下单     Lee_zhj
+//todo 微信APP支付统一下单、、、     Lee_zhj
 class wechatAppPay
 {
     //接口API URL前缀
