@@ -8,34 +8,9 @@
 
 class LoginAction extends CommonAction{
 
-    //todo 用户注册      Lee_zhj
-    /*public function register(){
-        //$input_name = $_POST['name'];
-        //$input_password = $_POST['password'];
-        $input_name = 'hhhhhhhhhhh';
-        $input_password = '7777777777777777777';
-        //判断name 与 password是否为空
-        if (empty($input_name) || empty($input_password)){
-            echo json_encode(['code'=>400,'message'=>'name or password cannot nil']);
-            return;
-        }
-
-        $res = $this->userIsRegister($input_name);
-        if ($res){
-            echo json_encode(['code'=>400,'message'=>"$input_name is registered"]);
-            return;
-        }
-
-        $tb_userlogin = M(userlogin);
-        $userlogin['user_name'] = $input_name;
-        $userlogin['user_pwd'] = $input_password;
-        $tb_userlogin->add($userlogin);
-
-    }*/
-
-
-    //todo 用户登录      Lee_zhj
+    //todo 用户登录     Lee_zhj
     public function login(){
+
         $data['input']=file_get_contents("php://input");
         $data['get']=$_GET;
         $userName=$data['get']['user_name'];
@@ -45,6 +20,7 @@ class LoginAction extends CommonAction{
 //          $userPassword='qwer1234';
 
 
+        //判断用户名密码
         if($userName!=""&&$userPassword!=""){
             $tb_userlogin = M(userlogin);
             $userloginmsg['user_name']=$userName;
@@ -53,23 +29,32 @@ class LoginAction extends CommonAction{
             $sqlid=$tb_userlogin->where($userloginmsg)->getField('ID');
 
             if($sqlnmsg){
-                $getrandom['get_random']=$this->genRandomString();
+                $getrandom['rand_psd']=$this->genRandomString();
 
                 $tb_userlogin->where('ID='.$sqlid)->save($getrandom);
-                $userrandom = $tb_userlogin->where('ID='.$sqlid)->getField('get_random');
+                $par= $tb_userlogin->where('ID='.$sqlid)->getField('rand_psd');
                 //var_dump($userrandom);
 
-                $suc = 'success';
-                $params = array($userrandom,$suc);
-                //var_dump($params);
+                $result=array();
+                $result['ID']=$sqlid;
+                $result['rand_psd']=md5($par);
+                $result['error']='success';
+                $result['msg']=1;
 
-                die(json_encode($params));
+                die(json_encode($result));
+
             }else{
-                echo "用户名或密码错误！";
+                $result['error']='faild';
+                $result['msg']=2;
+
+                die(json_encode($result));
             }
         }
 
     }
+
+
+
 
     //产生一个指定长度的随机字符串,并返回给用户
     private function genRandomString($len = 6) {
