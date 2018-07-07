@@ -16,6 +16,7 @@ class LoginAction extends CommonAction
         $this->display();
     }
 
+
     //todo 登录处理 dologin      Lee_zhj
     public function do_login()
     {
