@@ -8,7 +8,7 @@
 
 class LoginAction extends CommonAction{
 
-    //todo 用户登录     Lee_zhj
+    //todo 用户登录20180709     Lee_zhj
     public function login(){
 
         $data['input']=file_get_contents("php://input");
@@ -38,10 +38,8 @@ class LoginAction extends CommonAction{
                 $result=array();
                 $result['ID']=$sqlid;
                 $result['rand_psd']=md5($par);
-                $result['error']='success';
-                $result['msg']=1;
 
-                die(json_encode($result));
+                $this->jsonout("success",'登录成功',$result);
 
             }else{
                 $result['error']='faild';
