@@ -16,10 +16,10 @@ if (ini_get('magic_quotes_gpc')) {
     $_POST = stripslashesRecursive($_POST);
 }
 //如果检测不到安装锁定文件，提示安装。
-if (!file_exists(BASE_PATH . '/attachs/install.lock')) {
+/*if (!file_exists(BASE_PATH . '/attachs/install.lock')) {
     header("Location: install/index.php");
     die;
-}
+}*/
 
 //调试模式,暂时开启，正式运营的时候建议关闭
 //ini_set('display_errors','On');
